@@ -137,8 +137,10 @@ def load_csv_no_headers(file_path, num_samples=None):
 
 
 # Update these paths to match your actual files
-train_path = '/Users/shan/Desktop/cmpe255/train.csv'
-test_path = '/Users/shan/Desktop/cmpe255/test.csv'
+# train_path = '/Users/shan/Desktop/cmpe255/train.csv'
+# test_path = '/Users/shan/Desktop/cmpe255/test.csv'
+train_path = '/Users/richardph911/Downloads/archive/train.csv' 
+test_path = '/Users/richardph911/Downloads/archive/test.csv' 
 
 # Load the data
 print(f"Loading training data from {train_path}...")
@@ -328,7 +330,7 @@ criterion = nn.BCEWithLogitsLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.01)
 
 # 7. Training loop with early stopping
-def train_model(model, train_loader, val_loader, criterion, optimizer, num_epochs=2, patience=10):
+def train_model(model, train_loader, val_loader, criterion, optimizer, num_epochs=10, patience=10):
     train_losses = []
     val_losses = []
     train_accs = []
@@ -460,12 +462,18 @@ def evaluate_model(model, test_loader):
             outputs = model(inputs)
             predicted = (outputs > 0.5).float()
             
-            all_preds.extend(predicted.cpu().numpy())
-            all_labels.extend(labels.cpu().numpy())
+            all_preds.extend(predicted.cpu())
+            all_labels.extend(labels.cpu())
     
-    # Calculate accuracy
-    accuracy = accuracy_score(all_labels, all_preds)
+    # Calculate accuracyls
+
+    all_preds = torch.cat(all_preds).squeeze()
+    all_labels = torch.cat(all_labels).squeeze()
+    
+    accuracy = (all_preds == all_labels).float().mean().item()
     print(f"Test Accuracy: {accuracy:.4f}")
+    # accuracy = accuracy_score(all_labels, all_preds)
+    # print(f"Test Accuracy: {accuracy:.4f}")
     
     # F1 score
     f1 = f1_score(all_labels, all_preds)
