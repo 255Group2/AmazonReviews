@@ -33,7 +33,7 @@ def date_time(x):
     if x==4:
         return 'Date today: %s' % datetime.date.today()
 
-# Text preprocessing functions
+# Simplified text preprocessing functions
 def preprocess_text(text):
     # Handle None or non-string values
     if not isinstance(text, str):
@@ -492,7 +492,8 @@ print(f"\nModel saved as {model_filename}")
 print(f"\n===== COMPLETED AT {date_time(1)} =====")
 
 
-# Expexted output with max-epoch =2 rather than 30: 
+
+# Expected output with max-epoch = 1 rather than 30:  _warn_prf(average, modifier, f"{metric.capitalize()} is", len(result))
 #               precision    recall  f1-score   support
 
 #          0.0       0.49      1.00      0.66     24626
@@ -506,3 +507,34 @@ print(f"\n===== COMPLETED AT {date_time(1)} =====")
 # Confusion Matrix:
 # [[24626     0]
 #  [25374     0]]
+
+# ===== Example Predictions =====
+
+# Review: Waste of time and money Pretty useless. Should more properly be titled "Great Family Resorts", as that is what it principly addresses. Has some information about seperate activities (at the resorts) f...
+# Sentiment: Negative (Confidence: 0.00) 
+# True Label: Negative
+# --------------------------------------------------------------------------------
+
+# Review: Mariah has proven herself to be an industry tramp....... 2005 has shown the true side of mariah, and has shown her greed and hatred for her fans. She knows that they will buy anything that has her nam...
+# Sentiment: Negative (Confidence: 0.00)
+# True Label: Negative
+# --------------------------------------------------------------------------------
+
+# Review: Total rip off The Three stooges( Collectors Edition)The box says "7DVDs over 11 hours" what they dont say is that there are only 4 classic stooges shorts and only on the first DVD. The rest of the set...
+# Sentiment: Negative (Confidence: 0.00)
+# True Label: Negative
+# --------------------------------------------------------------------------------
+
+# Review: Medwyn Goodall I find Medwyn Goodall's music mesmerizing! I LOVE his Druid, his Merlin series, Grail Quest, King Authur. Guinevere, Clan -- all of his Celtic CD's... I'm a writer of fantasy, and no ot...
+# Sentiment: Negative (Confidence: 0.00)
+# True Label: Positive
+# --------------------------------------------------------------------------------
+
+# Review: Intersex is NOT transgender The author of this book incorrectly includes infants born with genetic conditions under the transgender term. Intersex conditions are those in which an infant is born with ...
+# Sentiment: Negative (Confidence: 0.00)
+# True Label: Negative
+# --------------------------------------------------------------------------------
+
+# Model saved as Binary_Classification_PyTorch_CNN.pth
+
+# ===== COMPLETED AT Timestamp: 2025-04-30 00:12:03 =====
