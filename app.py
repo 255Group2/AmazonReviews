@@ -1,15 +1,36 @@
 import streamlit as st
 import torch
-from utils import preprocess_text, SimpleVocab, TextCNN
+from utils import preprocess_text, SimpleVocab
+import torch.nn as nn
+import torch.nn.functional as F
 
-# Constants
+# Configuration
 MODEL_PATH = "Binary_Classification_PyTorch_CNN.pth"
 VOCAB_SIZE = 20000
 EMBED_SIZE = 300
 MAX_SEQUENCE_LENGTH = 220
 
-# App config
-st.set_page_config(page_title="Sentiment Analysis", layout="centered")
+# Define the model architecture (must match training)
+class TextCNN(nn.Module):
+    def __init__(self, vocab_size, embedding_dim, max_seq_length):
+        super().__init__()
+        self.embedding = nn.Embedding(vocab_size, embedding_dim)
+        self.conv1 = nn.Conv1d(embedding_dim, 32, kernel_size=4, padding=1)
+        self.conv2 = nn.Conv1d(32, 64, kernel_size=4, padding=1)
+        self.conv3 = nn.Conv1d(64, 128, kernel_size=4, padding=1)
+        self.pool = nn.MaxPool1d(2)
+        self.dropout = nn.Dropout(0.1)
+        self.fc1 = nn.Linear(128 * 26, 256)  # Calculated based on MAX_SEQUENCE_LENGTH
+        self.fc2 = nn.Linear(256, 1)
+    
+    def forward(self, x):
+        x = self.embedding(x).permute(0, 2, 1)
+        x = self.pool(F.relu(self.conv1(x)))
+        x = self.pool(F.relu(self.conv2(x)))
+        x = self.pool(F.relu(self.conv3(x)))
+        x = x.view(x.size(0), -1)
+        x = F.relu(self.fc1(x))
+        return torch.sigmoid(self.fc2(x))
 
 @st.cache_resource
 def load_model():
@@ -19,7 +40,7 @@ def load_model():
     model.eval()
     return model
 
-def predict(text):
+def predict(text, model, vocab, device):
     processed = preprocess_text(text)
     sequence = vocab.text_to_sequence(processed)
     padded = vocab.pad_sequence(sequence, MAX_SEQUENCE_LENGTH)
@@ -28,38 +49,34 @@ def predict(text):
     with torch.no_grad():
         output = model(tensor)
         pred = output.item()
-        sentiment = "Positive" if pred > 0.5 else "Negative"
-        confidence = pred if sentiment == "Positive" else 1 - pred
-    
-    return {
-        'sentiment': sentiment,
-        'confidence': round(confidence * 100, 2),
-        'score': float(pred)
-    }
+        return {
+            'sentiment': 'Positive' if pred > 0.5 else 'Negative',
+            'confidence': round((pred if pred > 0.5 else 1 - pred) * 100, 2),
+            'score': pred
+        }
 
-# Load model and vocab
+# UI Setup
+st.set_page_config(page_title="Sentiment Analysis", layout="centered")
+st.title("Sentiment Analysis")
+
+# Load resources
 model = load_model()
 device = next(model.parameters()).device
-vocab = SimpleVocab([], min_freq=2)
+vocab = SimpleVocab([], min_freq=2)  # Should load your actual vocab
 
-# UI
-st.title("Sentiment Analysis")
-text = st.text_area("Enter text:", height=150)
+# Input/Output
+text = st.text_area("Enter text:", height=150, key="input_text")
 
 if st.button("Analyze"):
     if text.strip():
-        result = predict(text)
+        result = predict(text, model, vocab, device)
         if result['sentiment'] == "Positive":
-            st.success(f"😊 Positive ({result['confidence']}%)")
+            st.success(f"😊 Positive ({result['confidence']}% confidence)")
         else:
-            st.error(f"😞 Negative ({result['confidence']}%)")
+            st.error(f"😞 Negative ({result['confidence']}% confidence)")
         st.progress(result['confidence'] / 100)
     else:
         st.warning("Please enter some text")
 
 if st.button("Example"):
-    st.session_state.example = "This watch is 5/5. I love it. It is very comfortable to wear"
-    st.experimental_rerun()
-
-if 'example' in st.session_state:
-    text = st.session_state.example
+    st.session_state.input_text = "This product is absolutely wonderful! I love everything about it."
