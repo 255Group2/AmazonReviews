@@ -40,6 +40,8 @@ class SimpleVocab:
     def text_to_sequence(self, text):
         tokens = simple_tokenize(text)
         return [self.word2idx.get(word, 1) for word in tokens]
+    def vocab_size(self):
+        return self.vocab_size
     
     def pad_sequence(self, sequence, max_len):
         return sequence[:max_len] if len(sequence) >= max_len else sequence + [0] * (max_len - len(sequence))

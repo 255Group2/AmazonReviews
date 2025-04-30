@@ -6,7 +6,7 @@ import torch.nn.functional as F
 
 # Configuration
 MODEL_PATH = "Binary_Classification_PyTorch_CNN.pth"
-VOCAB_SIZE = 20000
+VOCAB_SIZE = 43793
 EMBED_SIZE = 300
 MAX_SEQUENCE_LENGTH = 220
 
@@ -71,12 +71,9 @@ if st.button("Analyze"):
     if text.strip():
         result = predict(text, model, vocab, device)
         if result['sentiment'] == "Positive":
-            st.success(f"😊 Positive ({result['confidence']}% confidence)")
+            st.success(f"Positive ({result['confidence']}% confidence)")
         else:
-            st.error(f"😞 Negative ({result['confidence']}% confidence)")
+            st.error(f"Negative ({result['confidence']}% confidence)")
         st.progress(result['confidence'] / 100)
     else:
         st.warning("Please enter some text")
-
-if st.button("Example"):
-    st.session_state.input_text = "This product is absolutely wonderful! I love everything about it."
