@@ -24,5 +24,7 @@ https://www.kaggle.com/datasets/kritanjalijain/amazon-reviews
 ### Contributors
 
     Richard Pham
+
     Shivansh Chhabra
+
     Ganesh Nagavenkatasai Mohan Kancherla
