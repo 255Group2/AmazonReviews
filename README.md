@@ -2,9 +2,9 @@
 
 ### Dataset
 
-We use the publicly available dataset from Kaggle:  
-**Amazon Reviews**  
-https://www.kaggle.com/datasets/kritanjalijain/amazon-reviews
+We use the publicly available dataset:  
+**Amazon Reviews for Office Products**  
+https://amazon-reviews-2023.github.io/
 
 ---
 
